@@ -16,19 +16,15 @@
     </form>
 
     <?php
-    //sprawdź czy został wysłany formularz
     if(isset($_POST['submit'])) 
     {
-        //zdefiniuj folder do którego trafią pliki (ścieżka względem pliku index.php)
+
         $targetDir = "img/";
 
-        //pobierz pierwotną nazwę pliku z tablicy $_FILES
         $sourceFileName = $_FILES['uploadedFile']['name'];
 
-        //pobierz tymczasową ścieżkę do pliku na serwerze
         $tempURL = $_FILES['uploadedFile']['tmp_name'];
 
-        //sprawdź czy mamy do czynienia z obrazem
         $imgInfo = getimagesize($tempURL);
         if(!is_array($imgInfo)) {
             die("BŁĄD: Przekazany plik nie jest obrazem!");
@@ -40,6 +36,34 @@
         //$sourceFileExtension = strtolower($sourceFileExtension);
         /// niepotrzebne - generujemy webp
 
-        //wygeneruj hash - nową nazwę pliku
         $newFileName = hash("sha256", $sourceFileName) . hrtime(true)
                             . ".webp";
+
+        
+        $imageString = file_get_contents($tempURL);
+
+        $gdImage = @imagecreatefromstring($imageString);
+
+        //wygeneruj pełny docelowy URL
+        $targetURL = $targetDir . $newFileName;
+
+        //zbuduj docelowy URL pliku na serwerze
+        //$targetURL = $targetDir . $sourceFileName;
+        //wycofane na rzecz hasha
+
+        //sprawdź czy plik przypadkiem już nie istnieje
+        if(file_exists($targetURL)) {
+            die("BŁĄD: Podany plik już istnieje!");
+        }
+
+        //przesuń plik do docelowej lokalizacji
+        //move_uploaded_file($tempURL, $targetURL);
+        //nieaktualne - generujemy webp
+        imagewebp($gdImage, $targetURL);
+
+
+        echo "Plik został poprawnie wgrany na serwer";
+    }
+    ?>
+</body>
+</html>
