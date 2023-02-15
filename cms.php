@@ -14,3 +14,32 @@
         <input type="file" name="uploadedFile" id="uploadedFileInput" required><br>
         <input type="submit" value="Wyślij plik" name="submit"><br>
     </form>
+
+    <?php
+    //sprawdź czy został wysłany formularz
+    if(isset($_POST['submit'])) 
+    {
+        //zdefiniuj folder do którego trafią pliki (ścieżka względem pliku index.php)
+        $targetDir = "img/";
+
+        //pobierz pierwotną nazwę pliku z tablicy $_FILES
+        $sourceFileName = $_FILES['uploadedFile']['name'];
+
+        //pobierz tymczasową ścieżkę do pliku na serwerze
+        $tempURL = $_FILES['uploadedFile']['tmp_name'];
+
+        //sprawdź czy mamy do czynienia z obrazem
+        $imgInfo = getimagesize($tempURL);
+        if(!is_array($imgInfo)) {
+            die("BŁĄD: Przekazany plik nie jest obrazem!");
+        }
+
+        //wyciągnij pierwotne rozszerzenie pliku
+        //$sourceFileExtension = pathinfo($sourceFileName, PATHINFO_EXTENSION);
+        //zmień litery rozszerzenia na małe
+        //$sourceFileExtension = strtolower($sourceFileExtension);
+        /// niepotrzebne - generujemy webp
+
+        //wygeneruj hash - nową nazwę pliku
+        $newFileName = hash("sha256", $sourceFileName) . hrtime(true)
+                            . ".webp";
