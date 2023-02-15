@@ -35,54 +35,62 @@
             die("BŁĄD: Przekazany plik nie jest obrazem!");
         }
 
-        //wyciągnij pierwotne rozszerzenie pliku
-        //$sourceFileExtension = pathinfo($sourceFileName, PATHINFO_EXTENSION);
-        //zmień litery rozszerzenia na małe
-        //$sourceFileExtension = strtolower($sourceFileExtension);
-        /// niepotrzebne - generujemy webp
-
         //wygeneruj hash - nową nazwę pliku
         $newFileName = hash("sha256", $sourceFileName) . hrtime(true)
                             . ".webp";
-
-        
-        //zaczytujemy cały obraz z folderu tymczasowego do stringa
         $imageString = file_get_contents($tempURL);
 
-        //generujemy obraz jako obiekt klasy GDImage
-        //@ przed nazwa funkcji powoduje zignorowanie ostrzeżeń
         $gdImage = @imagecreatefromstring($imageString);
 
-        //wygeneruj pełny docelowy URL
+
         $targetURL = $targetDir . $newFileName;
 
-        //zbuduj docelowy URL pliku na serwerze
-        //$targetURL = $targetDir . $sourceFileName;
-        //wycofane na rzecz hasha
-
-        //sprawdź czy plik przypadkiem już nie istnieje
         if(file_exists($targetURL)) {
             die("BŁĄD: Podany plik już istnieje!");
         }
-
-        //przesuń plik do docelowej lokalizacji
-        //move_uploaded_file($tempURL, $targetURL);
-        //nieaktualne - generujemy webp
         imagewebp($gdImage, $targetURL);
 
 
         echo "Plik został poprawnie wgrany na serwer";
-
-        $db = new mysqli("localhost", "root", "", "post");
-        $q = "INSERT post (ID, timestamp, filename) VALUES (NULL, ?, ?)";
-        $preparedQ = $db->prepare($q);
-        $date = date('Y-m-d H:i:s');
-        $preparedQ->bind_param('ss', $date, $filename);
-        $result = $preparedQ->execute();
-        if (!$result) {
-            die("Błąd bazy danych");
     }
+    
+     
+if(isset($_POST['submit']))
+{
+    $filename = $_FILES['uploadedFile']['name'];
+    $tempFileUrl = $_FILES["uploadedFile"]["tmp_name"];
+    $targetDir = "image/";
+    $imageInfo = getimagesize($_FILES["uploadedFile"]["tmp_name"]);
+    if(!is_array($imageInfo)) {
+        die("BŁĄD: Nieprawidłowy format obrazu");
     }
+ 
+    $imgString = file_get_contents($tempFileUrl);
+    $gdImage = imagecreatefromstring($imgString);
+ 
+    $targetExtension = pathinfo($filename, PATHINFO_EXTENSION);
+    $targetExtension = strtolower($targetExtension);
+ 
+    $filename = $filename . hrtime(true);
+    $filename = hash("sha256", $filename);
+ 
+    $targetUrl = $targetDir . $filename . "." . $targetExtension;
+    if(file_exists($targetUrl))
+        die("BŁĄD: Plik o tej nazwie juz istnieje");
+    
+    $targetUrl = $targetDir . $filename . ".webp";
+    imagewebp($gdImage, $targetUrl);
+ 
+    $db = new mysqli("localhost", "root", "", "post");
+    $q = "INSERT post (ID, timestamp, filename) VALUES (NULL, ?, ?)";
+    $preparedQ = $db->prepare($q);
+    $date = date('Y-m-d H:i:s');
+    $preparedQ->bind_param('ss', $date, $filename);
+    $result = $preparedQ->execute();
+    if (!$result) {
+        die("Błąd bazy danych");
+    }
+}
     ?>
 </body>
 </html>
