@@ -37,7 +37,7 @@ class Post {
         //przetwarzanie na tablicę asocjacyjną - bez pętli bo będzie tylko jeden
         $row = $result->fetch_assoc();
         //tworzenie obiektu
-        $p = new Post($row['id'], $row['filename'], $row['timestamp'], $row['tytuł']);
+        $p = new Post($row['id'], $row['FileName'], $row['TimeStamp'], $row['Tytuł']);
         //zwracanie obiektu
         return $p; 
     }
