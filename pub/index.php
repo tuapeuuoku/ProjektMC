@@ -23,7 +23,7 @@ Route::add('/upload', function() {
         Post::upload($_FILES['uploadedFile']['tmp_name']);
     }
     //TODO: zmienić na ścieżkę względną
-    header("Location: http://localhost/ProjektMC/pub");
+    header("Location: http://localhost/zadanie0102/pub");
 }, 'post');
-Route::run('/ProjektMC/pub');
+Route::run('/zadanie0102/pub');
 ?>
