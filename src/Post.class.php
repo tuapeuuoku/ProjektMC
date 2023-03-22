@@ -1,18 +1,18 @@
 <?php
 class Post {
-    private int $ID;
+    private int $id;
     private string $FileName;
     private string $TimeStamp;
     private string $Tytuł;
     
     function __construct(int $i, string $f, string $t, string $Y)
     {
-        $this->ID = $i;
+        $this->id = $i;
         $this->FileName = $f;
         $this->TimeStamp = $t;
         $this->Tytuł =$Y;
     }
-
+1
     public function getFilename() : string {
         return $this->FileName;
     }
