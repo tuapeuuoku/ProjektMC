@@ -1,6 +1,6 @@
 {
-    "name": "1294716/cms",
     "require": {
+        "smarty/smarty": "4.1.*",
         "steampixel/simple-php-router": "^0.7.1",
         "twig/twig": "^3.5"
     }

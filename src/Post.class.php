@@ -1,85 +1,107 @@
 <?php
 class Post {
-    private string $title;
-    private string $imageUrl;
-    private string $timeStamp;
-
-    function __construct(string $title, string $imageUrl, string $timeStamp)
+    private int $ID;
+    private string $FileName;
+    private string $TimeStamp;
+    private string $Tytuł;
+    
+    function __construct(int $i, string $f, string $t, string $Y)
     {
-        $this->title = $title;
-        $this->imageUrl = $imageUrl;
-        $this->timeStamp = $timeStamp;
-    }
-    public function getFileName() : string {
-        return $this->imageUrl;
-    }
-    public function getTitle() : string {
-        return $this->title;
-    }
-    public function getTimeStamp() : string {
-        return $this->timeStamp;
+        $this->ID = $i;
+        $this->FileName = $f;
+        $this->TimeStamp = $t;
+        $this->Tytuł =$Y;
     }
 
-    static function get(int $id) : Post {
-        global $db;
-        $query = $db->prepare("SELECT * FROM post WHERE id = ?");
-        $query->bind_param('i', $id);
-        $query->execute();
-        $result = $query->get_result();
-        $resultArray = $result->fetch_assoc();
-        return new Post($resultArray['title'], $resultArray['filename'], $resultArray['timestamp']);
+    public function getFilename() : string {
+        return $this->FileName;
+    }
+    public function getTimestamp() : string {
+        return $this->TimeStamp;
+    }
+    public function getTytuł() : string{
+        return $this->Tytuł;
     }
 
+
+    //funkcja zwraca ostatnio dodany obrazek
     static function getLast() : Post {
+        //odwołuję się do bazy danych
         global $db;
+        //Przygotuj kwerendę do bazy danych
         $query = $db->prepare("SELECT * FROM post ORDER BY timestamp DESC LIMIT 1");
+        //wykonaj kwerendę
         $query->execute();
+        //pobierz wynik
         $result = $query->get_result();
+        //przetwarzanie na tablicę asocjacyjną - bez pętli bo będzie tylko jeden
         $row = $result->fetch_assoc();
-        $p = new Post($row['id'], $row['filename'], $row['timestamp']);
-        return $p;
+        //tworzenie obiektu
+        $p = new Post($row['id'], $row['filename'], $row['timestamp'], $row['tytuł']);
+        //zwracanie obiektu
+        return $p; 
     }
-
-    static function getPage(int $pageNumber = 1, int $postsPerPage = 10) {
+    //funkcja zwraca jedna stronę obrazków
+    static function getPage(int $pageNumber = 1, int $postsPerPage = 10) : array {
+        //połączenie z bazą
         global $db;
-        $query = $db->prepare("SELECT * FROM post LIMIT 10 OFFSET ?");
-        $offset = ($pageNumber-1) * $postsPerPage;
-        $query->bind_param('i', $id);
+        //kwerenda
+        $query = $db->prepare("SELECT * FROM post ORDER BY timestamp DESC LIMIT ? OFFSET ?");
+        //oblicz przesunięcie - numer strony * ilość zdjęć na stronie
+        $offset = ($pageNumber-1)*$postsPerPage;
+        //podstaw do kwerendy
+        $query->bind_param('ii', $postsPerPage, $offset);
+        //wywołaj kwerendę
         $query->execute();
+        //odbierz wyniki
         $result = $query->get_result();
+        //stwórz tablicę na obiekty
         $postsArray = array();
+        //pobieraj wiersz po wierszu jako tablicę asocjacyjną indeksowaną nazwami kolumn z mysql
         while($row = $result->fetch_assoc()) {
-            $post = new Post($row['title'], $row['filename'], $row['timestamp']);
+            $post = new Post($row['ID'],$row['FileName'],$row['TimeStamp'],$row['Tytuł']);
             array_push($postsArray, $post);
         }
         return $postsArray;
     }
-    static function upload(string $filename, string $title = ""){
-        $uploadDir = "img/";
-        $imageInfo = getimagesize($filename);
-    if(!is_array($imageInfo)) {
-        die("BŁĄD: Nieprawidłowy format obrazu");
-        
-    }
-    $randomSeed = rand(10000,99999) . hrtime(true);
-    $hash = hash("sha256", $randomSeed);
-    $newfilename = $uploadDir . $hash . ".webp";
-    if(file_exists($newfilename)){
-        die("BŁĄD: Plik o tej nazwie juz istnieje");
-    }
-    $imageString = file_get_contents($filename);
-    $gdImage = @imagecreatefromstring($imageString);
-    imagewebp($gdImage, $newfilename);
-
-    global $db;
-
-    $query = $db->prepare("INSERT INTO post VALUES(NULL, ?, ?, ?)");
-    $dbTimestamp = date("Y-m-d H:i:s");
-    $query->bind_param("sss", $dbTimestamp, $newfilename, $title);
-    if(!$query->execute())
-        die("Błąd zapisu do bazy danych");
+    static function upload(string $tempFileName) {
+        $Tytuł=$_POST['tytul'];
+        //deklarujemy folder do którego będą zaczytywane obrazy
+        $targetDir = "img/";
+        //sprawdź czy mamy do czynienia z obrazem
+        $imgInfo = getimagesize($tempFileName);
+        //jeżeli $imgInfo nie jest tablicą to nie jest to obraz
+        if(!is_array($imgInfo)) {
+            die("BŁĄD: Przekazany plik nie jest obrazem!");
+        }
+        //generujemy losową liczbę w formie
+        //5 losowych cyfr + znacznik czasu z dokładnością do ms
+        $randomNumber = rand(10000, 99999) . hrtime(true);
+        //wygeneruj hash - nową nazwę pliku
+        $hash = hash("sha256", $randomNumber);
+        //tworzymy docelowy url pliku graficznego na serwerze
+        $newFileName = $targetDir . $hash . ".webp";
+        //sprawdź czy plik przypadkiem już nie istnieje
+        if(file_exists($newFileName)) {
+            die("BŁĄD: Podany plik już istnieje!");
+        }
+        //zaczytujemy cały obraz z folderu tymczasowego do stringa
+        $imageString = file_get_contents($tempFileName);
+        //generujemy obraz jako obiekt klasy GDImage
+        //@ przed nazwa funkcji powoduje zignorowanie ostrzeżeń
+        $gdImage = @imagecreatefromstring($imageString);
+        //zapisujemy w formacie webp
+        imagewebp($gdImage, $newFileName);
+        //użyj globalnego połączenia
+        global $db;
+        //stwórz kwerendę
+        $query = $db->prepare("INSERT INTO post VALUES(NULL, ?, ?, ?)");
+        //przygotuj znacznik czasu dla bazy danych
+        $dbTimestamp = date("Y-m-d H:i:s");
+        //zapisz dane do bazy
+        $query->bind_param("sss", $dbTimestamp, $newFileName, $Tytuł);
+        if(!$query->execute())
+            die("Błąd zapisu do bazy danych");
     }
 }
-
-
 ?>
