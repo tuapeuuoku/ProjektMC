@@ -12,7 +12,7 @@ class Post {
         $this->TimeStamp = $t;
         $this->Tytuł =$Y;
     }
-1
+    
     public function getFilename() : string {
         return $this->FileName;
     }
