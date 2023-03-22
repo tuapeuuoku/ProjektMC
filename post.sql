@@ -29,8 +29,9 @@ SET time_zone = "+00:00";
 
 CREATE TABLE `post` (
   `id` int(11) NOT NULL,
-  `timestamp` datetime NOT NULL,
-  `filename` varchar(255) NOT NULL
+  `TimeStamp` datetime NOT NULL,
+  `FileName` varchar(255) NOT NULL,
+  `Tytuł` text NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --

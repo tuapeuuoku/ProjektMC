@@ -59,7 +59,7 @@ class Post {
         $postsArray = array();
         //pobieraj wiersz po wierszu jako tablicę asocjacyjną indeksowaną nazwami kolumn z mysql
         while($row = $result->fetch_assoc()) {
-            $post = new Post($row['ID'],$row['FileName'],$row['TimeStamp'],$row['Tytuł']);
+            $post = new Post($row['id'],$row['FileName'],$row['TimeStamp'],$row['Tytuł']);
             array_push($postsArray, $post);
         }
         return $postsArray;
