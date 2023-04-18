@@ -3,9 +3,9 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Czas generowania: 29 Mar 2023, 13:46
--- Wersja serwera: 10.4.24-MariaDB
--- Wersja PHP: 8.0.19
+-- Czas generowania: 18 Kwi 2023, 15:52
+-- Wersja serwera: 10.4.27-MariaDB
+-- Wersja PHP: 8.2.0
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -18,8 +18,20 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Baza danych: `projektmc`
+-- Baza danych: `cms_ss`
 --
+
+-- --------------------------------------------------------
+
+--
+-- Struktura tabeli dla tabeli `liked`
+--
+
+
+--
+-- Zrzut danych tabeli `liked`
+--
+
 
 -- --------------------------------------------------------
 
@@ -28,29 +40,23 @@ SET time_zone = "+00:00";
 --
 
 CREATE TABLE `post` (
-  `ID` int(64) NOT NULL,
-  `TimeStamp` datetime NOT NULL,
-  `FileName` varchar(98) NOT NULL,
+  `ID` int(11) NOT NULL,
+  `timestamp` datetime NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  `filename` varchar(1024) NOT NULL,
   `memeTitle` text NOT NULL,
-  `userID` int(11) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+  `removed` tinyint(1) NOT NULL DEFAULT 0,
+  `userID` int(255) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Zrzut danych tabeli `post`
 --
 
-INSERT INTO `post` (`ID`, `TimeStamp`, `FileName`, `memeTitle`, `userID`) VALUES
-(32, '2023-03-01 14:55:00', 'img/3d0bd3a087fa34f851bb8a09faf9953ca45539a9f431487790757dce746c3b19.webp', '', 1),
-(33, '2023-03-01 14:57:36', 'img/de24df4fb7905c761db67f2dabacb595921efc78930d6733198acfd7996887ad.webp', '', 2),
-(34, '2023-03-01 14:59:03', 'img/12e21262e73f23f6c4949198282f262c2f560c2dccc70806fa15847ff4d081a7.webp', '', 3),
-(35, '2023-03-08 15:08:30', 'img/d670b467c5735f5e1dc38c0288a2eaf2298770b2877868c2507dba8d64f493bd.webp', '', 4),
-(36, '2023-03-08 15:19:40', 'img/a02326096067788837c0cb29d4ac7e7611f0cdc1f72919a8faad3e9f37f50045.webp', '', 5),
-(37, '2023-03-08 15:20:48', 'img/5058acc94d52bed04d490a752166f331b42440fb8894075ecbbb7f6444d27feb.webp', '', 6),
-(38, '2023-03-08 15:21:03', 'img/ac1ede0f727174eda4934426689bd230f17b7ac448e6adb26bf4d9cebbba30be.webp', '', 7),
-(39, '2023-03-08 15:36:01', 'img/b6393cce89b6fa48f14a5784e14d63d80b1f5d6174cfa5263b3c8a3369f890a0.webp', '', 8),
-(40, '2023-03-15 14:22:54', 'img/948cba1543b893d90eb835008b7bad8b7fe1092c873ad0f8cf4fb28cca09252b.webp', 'Podaj Tytul mema', 9),
-(41, '2023-03-15 14:23:27', 'img/c174ab3ed6ebc467e2fbb2c02ecb921365d708f77afc01ecbe5bd95e28ae1194.webp', 'Podaj Tytul mema', 10),
-(42, '2023-03-15 14:42:24', 'img/f87e510ca9d18de45b3ecf02ddf4be9c79cc1257c716e1355282768c312ecf8b.webp', 'Działa', 11);
+INSERT INTO `post` (`ID`, `timestamp`, `filename`, `memeTitle`,`removed`, `userID`) VALUES
+(1, '2023-03-22 15:42:32', 'img/3d0bd3a087fa34f851bb8a09faf9953ca45539a9f431487790757dce746c3b19.webp', 'geg', 0, 3),
+(2, '2023-04-18 15:52:30', 'img/de24df4fb7905c761db67f2dabacb595921efc78930d6733198acfd7996887ad.webp', 'hhh', 0, 3),
+(3, '2023-04-18 15:44:54', 'img/12e21262e73f23f6c4949198282f262c2f560c2dccc70806fa15847ff4d081a7.webp', 'hree', 0, 3),
+(4, '2023-04-18 15:44:26', 'img/d670b467c5735f5e1dc38c0288a2eaf2298770b2877868c2507dba8d64f493bd.webp', 'essa123123', 0, 3);
 
 -- --------------------------------------------------------
 
@@ -61,16 +67,19 @@ INSERT INTO `post` (`ID`, `TimeStamp`, `FileName`, `memeTitle`, `userID`) VALUES
 CREATE TABLE `user` (
   `ID` int(11) NOT NULL,
   `email` varchar(255) NOT NULL,
-  `password` varchar(128) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+  `password` varchar(255) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Zrzut danych tabeli `user`
 --
 
 INSERT INTO `user` (`ID`, `email`, `password`) VALUES
-(1, 'TAK@wp.pl', 'TAK'),
-(2, 'DUPA@wp.pl', 'tak');
+(1, 'Sebaskiba1@gmail.com', '$argon2i$v=19$m=65536,t=4,p=1$NU02Z1d3NkRZbnhVUWNISg$8EMlLvEyjgmoBqGa92jObgT/CWd1j6EFlqWi09sCgqU'),
+(2, 'geg@geg.crf', '$argon2i$v=19$m=65536,t=4,p=1$TTlNa0JmY3ZYblRwTlNhdA$09rR0RIjHxEYW5ZHrmtQ1G0anfx+p6r8s01JJdQuDmg'),
+(3, 'a@a.a', '$argon2i$v=19$m=65536,t=4,p=1$eDhpRmowVTlMeHFxcy9MSg$9P8ok0tkSKqtnZTx6+w4uQvhUaaH8vaJ2mGsll0fZbs'),
+(4, 'q@q.q', '$argon2i$v=19$m=65536,t=4,p=1$LmRLVHdWTEJFMTFsTTV1RQ$DmbCzK+Eu26ydq6wDskyQgWX9p9GB3ooOt/pbQK22og'),
+(5, 'z@z.z', '$argon2i$v=19$m=65536,t=4,p=1$TXcvYUhOb2R3eUNSMFBsMA$yGB2s8oAz4vbevA0Bt4rj97t+ctVUltsuZruP5YqhVo');
 
 --
 -- Indeksy dla zrzutów tabel
@@ -86,7 +95,8 @@ ALTER TABLE `post`
 -- Indeksy dla tabeli `user`
 --
 ALTER TABLE `user`
-  ADD PRIMARY KEY (`ID`);
+  ADD PRIMARY KEY (`ID`),
+  ADD UNIQUE KEY `email` (`email`);
 
 --
 -- AUTO_INCREMENT dla zrzuconych tabel
@@ -96,13 +106,13 @@ ALTER TABLE `user`
 -- AUTO_INCREMENT dla tabeli `post`
 --
 ALTER TABLE `post`
-  MODIFY `ID` int(64) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=43;
+  MODIFY `ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT dla tabeli `user`
 --
 ALTER TABLE `user`
-  MODIFY `ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

@@ -69,7 +69,7 @@ class Post {
         $postsArray = array();
         //pobieraj wiersz po wierszu jako tablicę asocjacyjną indeksowaną nazwami kolumn z mysql
         while($row = $result->fetch_assoc()) {
-            $post = new Post($row['ID'],$row['FileName'],$row['TimeStamp'],$row['Tytuł'], $row['userId']);
+            $post = new Post($row['ID'],$row['filename'],$row['timestamp'],$row['memeTitle'], $row['userID']);
             array_push($postsArray, $post);
         }
         return $postsArray;
@@ -114,7 +114,7 @@ class Post {
     }
     public static function remove($id) : bool {
         global $db;
-        $query = $db->prepare("UPDATE projektmc SET removed = 1 WHERE id = ?");
+        $query = $db->prepare("UPDATE post SET removed = 1 WHERE id = ?");
         $query->bind_param("i", $id);
         return $query->execute();
     }
