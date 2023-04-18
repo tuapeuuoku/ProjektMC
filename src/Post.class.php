@@ -6,15 +6,16 @@ class Post {
     private string $Tytuł;
     private int $userId;
     private string $authorName;
-
-    function __construct(int $i, string $f, string $t, string $title, int $authorId ) {
-        $this->id = $i;
-        $this->filename = $f;
-        $this->timestamp = $t;
-        $this->title = $title;
-        $this->authorId = $authorId;
+    
+    function __construct(int $i, string $f, string $t, string $Y, int $userId)
+    {
+        $this->ID = $i;
+        $this->FileName = $f;
+        $this->TimeStamp = $t;
+        $this->Tytuł =$Y;
+        $this->userId = $userId;
         global $db;
-        $this->authorName = User::getNameById($this->userID);
+        $this->authorName = User::getNameById($this->userId);
     }
     public function getId() : int {
         return $this->ID;
@@ -33,26 +34,42 @@ class Post {
     }
 
 
+    //funkcja zwraca ostatnio dodany obrazek
     static function getLast() : Post {
+        //odwołuję się do bazy danych
         global $db;
+        //Przygotuj kwerendę do bazy danych
         $query = $db->prepare("SELECT * FROM post ORDER BY timestamp DESC LIMIT 1");
+        //wykonaj kwerendę
         $query->execute();
+        //pobierz wynik
         $result = $query->get_result();
+        //przetwarzanie na tablicę asocjacyjną - bez pętli bo będzie tylko jeden
         $row = $result->fetch_assoc();
-        $p = new Post($row['id'], $row['filename'], $row['timestamp'], $row['title'], $row['userId']);
+        //tworzenie obiektu
+        $p = new Post($row['id'], $row['filename'], $row['timestamp'], $row['tytuł'], $row['userId']);
+        //zwracanie obiektu
         return $p; 
     }
-
+    //funkcja zwraca jedna stronę obrazków
     static function getPage(int $pageNumber = 1, int $postsPerPage = 10) : array {
+        //połączenie z bazą
         global $db;
-        $query = $db->prepare("SELECT * FROM post ORDER BY timestamp DESC LIMIT ? OFFSET ?");
+        //kwerenda
+        $query = $db->prepare("SELECT * FROM post WHERE removed = 0 ORDER BY timestamp DESC LIMIT ? OFFSET ?");
+        //oblicz przesunięcie - numer strony * ilość zdjęć na stronie
         $offset = ($pageNumber-1)*$postsPerPage;
+        //podstaw do kwerendy
         $query->bind_param('ii', $postsPerPage, $offset);
+        //wywołaj kwerendę
         $query->execute();
+        //odbierz wyniki
         $result = $query->get_result();
+        //stwórz tablicę na obiekty
         $postsArray = array();
+        //pobieraj wiersz po wierszu jako tablicę asocjacyjną indeksowaną nazwami kolumn z mysql
         while($row = $result->fetch_assoc()) {
-            $post = new Post($row['ID'],$row['FileName'],$row['TimeStamp'],$row['memeTitle'], $row['userID']);
+            $post = new Post($row['ID'],$row['FileName'],$row['TimeStamp'],$row['Tytuł'], $row['userId']);
             array_push($postsArray, $post);
         }
         return $postsArray;
@@ -97,12 +114,10 @@ class Post {
     }
     public static function remove($id) : bool {
         global $db;
-        $query = $db->prepare("UPDATE post SET removed = 1 WHERE id = ?");
+        $query = $db->prepare("UPDATE projektmc SET removed = 1 WHERE id = ?");
         $query->bind_param("i", $id);
         return $query->execute();
     }
 }
 
-?>
-}
 ?>

@@ -59,7 +59,7 @@ Route::add('/login', function() {
     if(isset($_POST['submit'])) {
         if(User::login($_POST['email'], $_POST['password'])) {
             //zalogowano poprawnie
-            header("Location: http://localhost/ProjektJC/pub");
+            header("Location: http://localhost/ProjektMC/pub");
         } else {
             //błąd logowania
             $twigData = array('pageTitle' => "Zaloguj użytkownika",
@@ -67,8 +67,6 @@ Route::add('/login', function() {
             $twig->display("login.html.twig", $twigData);
         }
     }
-    header("Location: http://localhost/ProjektMC/pub");
-
 }, 'post');
 Route::add('/admin', function()  {
     global $twig;
@@ -84,7 +82,7 @@ Route::add('/admin', function()  {
 Route::add('/admin/remove/([0-9]*)', function($id) {
     if(Post::remove($id)) {
         //udało się usunąć
-        header("Location: http://localhost/ProjektJC/pub/");
+        header("Location: http://localhost/ProjektMC/pub/");
     } else {
         die("Nie udało się usunąć podanego obrazka");
     }
