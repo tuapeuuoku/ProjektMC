@@ -14,7 +14,7 @@ class Post {
         $this->title = $title;
         $this->authorId = $authorId;
         global $db;
-        $this->authorName = User::getNameById($this->userId);
+        $this->authorName = User::getNameById($this->userID);
     }
     public function getId() : int {
         return $this->ID;
@@ -52,7 +52,7 @@ class Post {
         $result = $query->get_result();
         $postsArray = array();
         while($row = $result->fetch_assoc()) {
-            $post = new Post($row['ID'],$row['FileName'],$row['TimeStamp'],$row['Tytuł'], $row['userId']);
+            $post = new Post($row['ID'],$row['FileName'],$row['TimeStamp'],$row['memeTitle'], $row['userID']);
             array_push($postsArray, $post);
         }
         return $postsArray;
