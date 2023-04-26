@@ -6,6 +6,7 @@ class Post {
     private string $Tytuł;
     private int $userId;
     private string $authorName;
+    private int $score;
     
     function __construct(int $i, string $f, string $t, string $Y, int $userId)
     {
@@ -32,6 +33,9 @@ class Post {
     public function getAuthorName() : string {
         return $this->authorName;
     }
+    public function getScore() : int {	
+        return $this->score;	
+    }
 
 
     //funkcja zwraca ostatnio dodany obrazek
@@ -47,7 +51,7 @@ class Post {
         //przetwarzanie na tablicę asocjacyjną - bez pętli bo będzie tylko jeden
         $row = $result->fetch_assoc();
         //tworzenie obiektu
-        $p = new Post($row['id'], $row['filename'], $row['timestamp'], $row['tytuł'], $row['userId']);
+        $p = new Post($row['ID'], $row['filename'], $row['timestamp'], $row['tytuł'], $row['userId']);
         //zwracanie obiektu
         return $p; 
     }
@@ -104,7 +108,7 @@ class Post {
         //użyj globalnego połączenia
         global $db;
         //stwórz kwerendę
-        $query = $db->prepare("INSERT INTO post VALUES(NULL, ?, ?, ?,?, 0)");
+        $query = $db->prepare("INSERT INTO post VALUES(NULL, ?, ?, ?,0, ?)");
         //przygotuj znacznik czasu dla bazy danych
         $dbTimestamp = date("Y-m-d H:i:s");
         //zapisz dane do bazy

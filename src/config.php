@@ -3,6 +3,7 @@ require_once('./../vendor/autoload.php');
 $db = new mysqli("localhost", "root", "", "projektmc");
 require("post.class.php");
 require("user.class.php");
+require("Vote.class.php");
 //loader to taki pomocnik do ładowania szablonów
 $loader = new Twig\Loader\FilesystemLoader("./../src/templates");
 //inicjujemy twiga

@@ -49,7 +49,7 @@ class User {
         //jeżeli autoryzacja się powiedzie to zapisz użytkownika jako obiekt w sesji
         if(password_verify($password, $passwordHash)) {
             //hasła są zgodne - możemy zalogować użytkownika
-            $u = new User($row['id'], $email);
+            $u = new User($row['ID'], $email);
             $_SESSION['user'] = $u;
             return true;
         } else {

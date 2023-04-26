@@ -87,6 +87,14 @@ Route::add('/admin/remove/([0-9]*)', function($id) {
         die("Nie udało się usunąć podanego obrazka");
     }
 });
-
-Route::run('/ProjektMC/pub');
+	
+Route::add('/upvote/([0-9]*)', function($id) {	
+    Vote::upVote($id, $_SESSION['user']->getId());	
+    header("Location: http://localhost/ProjektMC/pub/");	
+});	
+Route::add('/downvote/([0-9]*)', function($id) {	
+    Vote::downVote($id, $_SESSION['user']->getId());	
+    header("Location: http://localhost/ProjektMC/pub/");	
+});	
+Route::run('/ProjektMC/pub');	
 ?>
