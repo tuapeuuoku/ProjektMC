@@ -7,6 +7,7 @@ class Post {
     private int $userId;
     private string $authorName;
     private int $score;
+    private int $vote;
     
     function __construct(int $i, string $f, string $t, string $Y, int $userId)
     {
@@ -17,6 +18,11 @@ class Post {
         $this->userId = $userId;
         global $db;
         $this->authorName = User::getNameById($this->userId);
+        $this->score = Vote::getScore($this->ID);
+        if(User::isAuth())
+            $this->vote = Vote::getVote($this->ID, $_SESSION['user']->getId());
+        else 
+            $this->vote = 0;
     }
     public function getId() : int {
         return $this->ID;
