@@ -28,7 +28,7 @@ class Vote {
     public static function getScore(int $post_ID) : int {
         global $db;
         //zwróć sumę głosów dla danego posta
-        $query = $db->prepare("SELECT SUM(value) FROM vote WHERE post_ID = ?");
+        $query = $db->prepare("SELECT SUM(score) FROM vote WHERE post_ID = ?");
         $query->bind_param('i', $post_ID);
         if($query->execute()){
             $result = $query->get_result();
@@ -48,7 +48,7 @@ class Vote {
     public static function getVote(int $post_ID, int $user_ID) : int {
         //funkcja zwraca (-1,0,1) w zależności od teo czy użytkownik oddał już głos na tego mema
         global $db;
-        $query = $db->prepare("SELECT value FROM vote WHERE post_id = ? AND user_id = ?");
+        $query = $db->prepare("SELECT score FROM vote WHERE post_id = ? AND user_id = ?");
         $query->bind_param('ii', $post_ID, $user_ID);
         if($query->execute()) {
             $result = $query->get_result();	
